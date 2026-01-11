@@ -6,13 +6,13 @@ require_relative 'services/shipping_service'
 
 def main 
   order = OpenStruct.new(weight: 5)
-  shipping_service = service_builder("Dhl")
+  shipping_service = service_builder("Fedex")
   shipping_service.calculate_shipping(order)
 end
 
 def service_builder(shipping_method)
-  shipping_method_service = Object.const_get("#{shipping_method}ShippingStrategy").new
-  ShippingService.new(shipping_method_service)
+  shipping_method_service = ShippingStrategyInterface::REGISTRY[shipping_method] || DhlShippingStrategy
+  ShippingService.new(shipping_method_service.new)
 end
 
 main
